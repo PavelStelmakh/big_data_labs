@@ -4,16 +4,14 @@ import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.SQLContext;
 import scala.Tuple2;
 
-public class LogProcessing {
+public class DataProcessing {
     private String pathToFile;
     private static JavaSparkContext sc;
     private JavaRDD<String> data;
 
-    public LogProcessing(String pathToFile) {
+    public DataProcessing(String pathToFile) {
         this.pathToFile = pathToFile;
 
         SparkConf conf = new SparkConf().setAppName("Request reader")
@@ -25,9 +23,9 @@ public class LogProcessing {
         }
     }
 
-    public JavaRDD<RequestInformation> getRequestsInfo() {
-        JavaRDD<RequestInformation> requests = getData().map((Function<String, RequestInformation>) RequestInformation::new);
-        JavaPairRDD<Long, RequestInformation> requestsData = requests.mapToPair(t -> new Tuple2<>(t.getId(), t))
+    public JavaRDD<DataInfo> getRequestsInfo() {
+        JavaRDD<DataInfo> requests = getData().map((Function<String, DataInfo>) DataInfo::new);
+        JavaPairRDD<Long, DataInfo> requestsData = requests.mapToPair(t -> new Tuple2<>(t.getId(), t))
                 .reduceByKey((x, y) -> {
                     x.addToSum(y.getByteSum());
                     return x;
@@ -47,21 +45,5 @@ public class LogProcessing {
             data = sc.textFile(pathToFile);
         }
         return data;
-    }
-
-    public void setData(JavaRDD<String> data) {
-        this.data = data;
-    }
-
-    public String getPathToFile() {
-        return pathToFile;
-    }
-
-    public void setPathToFile(String pathToFile) {
-        this.pathToFile = pathToFile;
-    }
-
-    public JavaSparkContext getSc() {
-        return sc;
     }
 }

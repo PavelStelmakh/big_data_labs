@@ -1,9 +1,6 @@
-import org.apache.spark.SparkConf;
-import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
-import org.junit.Before;
 import org.junit.Test;
 import scala.Tuple2;
 
@@ -11,14 +8,14 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class LogProcessingTest {
+public class DataProcessingTest {
     @Test
     public void getRequestsInfo() {
         String path = "input/sample.txt";
-        LogProcessing logProcessing = new LogProcessing(path);
-        JavaRDD<RequestInformation> requestsData = logProcessing.getRequestsInfo();
-        List<RequestInformation> list = requestsData.filter(
-                (Function<RequestInformation, Boolean>) t -> {
+        DataProcessing dataProcessing = new DataProcessing(path);
+        JavaRDD<DataInfo> requestsData = dataProcessing.getRequestsInfo();
+        List<DataInfo> list = requestsData.filter(
+                (Function<DataInfo, Boolean>) t -> {
                         return t.getId() == 34 || t.getId() == 98;
                 }).collect();
 
@@ -32,8 +29,8 @@ public class LogProcessingTest {
     @Test
     public void getBrowserInfo() {
         String path = "input/sample.txt";
-        LogProcessing logProcessing = new LogProcessing(path);
-        JavaPairRDD<String, Integer> data = logProcessing.getBrowserInfo();
+        DataProcessing dataProcessing = new DataProcessing(path);
+        JavaPairRDD<String, Integer> data = dataProcessing.getBrowserInfo();
         List<Tuple2<String, Integer>> list = data.filter(
                 (Function<Tuple2<String, Integer>, Boolean>) t -> t._1().equals("Opera 11") || t._1().equals("Firefox 4") || t._1().equals("Safari 5"))
                 .collect();
